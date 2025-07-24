@@ -11,15 +11,15 @@ from pymongo import MongoClient
 # --- কনফিগারেশন (Configuration) ---
 # আপনার সব তথ্য এখানে সরাসরি বসান
 # =======================================================================
-API_ID = 1234567  # আপনার API ID এখানে বসান
-API_HASH = "YOUR_API_HASH"  # আপনার API Hash এখানে বসান
-BOT_TOKEN = "YOUR_BOT_TOKEN"  # আপনার বট টোকেন এখানে বসান
-MONGO_URI = "YOUR_MONGODB_CONNECTION_STRING"  # আপনার MongoDB কানেকশন স্ট্রিং এখানে বসান
+API_ID = 22697010  # আপনার API ID এখানে বসান
+API_HASH = "fd88d7339b0371eb2a9501d523f3e2a7"  # আপনার API Hash এখানে বসান
+BOT_TOKEN = "8040002093:AAFvi-Ydt6QtPlVq4vjYfsLS8XRdb1tVEho"  # আপনার বট টোকেন এখানে বসান
+MONGO_URI = "mongodb+srv://mewayo8672:mewayo8672@cluster0.ozhvczp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"  # আপনার MongoDB কানেকশন স্ট্রিং এখানে বসান
 
 # আপনার ফাইল চ্যানেল এবং ওয়েবসাইটের তথ্য
-FILE_CHANNEL = -1001234567890  # আপনার চ্যানেল আইডি এখানে বসান (অবশ্যই integer হতে হবে)
+FILE_CHANNEL = -1002589759775  # আপনার চ্যানেল আইডি এখানে বসান (অবশ্যই integer হতে হবে)
 BASE_URL = "https://your-app-name.herokuapp.com"  # আপনার ওয়েবসাইটের URL এখানে বসান
-ADMIN_IDS = [123456789, 987654321] # আপনার অ্যাডমিন ইউজার আইডিগুলো এখানে লিস্ট আকারে বসান
+ADMIN_IDS = [8172129114] # আপনার অ্যাডমিন ইউজার আইডিগুলো এখানে লিস্ট আকারে বসান
 # =======================================================================
 
 
