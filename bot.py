@@ -18,7 +18,7 @@ MONGO_URI = "mongodb+srv://mewayo8672:mewayo8672@cluster0.ozhvczp.mongodb.net/?r
 
 # আপনার ফাইল চ্যানেল এবং ওয়েবসাইটের তথ্য
 FILE_CHANNEL = -1002589759775  # আপনার চ্যানেল আইডি এখানে বসান (অবশ্যই integer হতে হবে)
-BASE_URL = "https://your-app-name.herokuapp.com"  # আপনার ওয়েবসাইটের URL এখানে বসান
+BASE_URL = "https://web-play.onrender.com"  # আপনার ওয়েবসাইটের URL এখানে বসান
 ADMIN_IDS = [8172129114] # আপনার অ্যাডমিন ইউজার আইডিগুলো এখানে লিস্ট আকারে বসান
 # =======================================================================
 
