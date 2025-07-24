@@ -9,17 +9,17 @@ from pyrogram.errors import FloodWait, FileIdInvalid
 from pymongo import MongoClient
 
 # --- কনফিগারেশন (Configuration) ---
-# আপনার সব তথ্য এখানে সরাসরি বসান
+# আপনার সব তথ্য এখানে সরাসরি বসানো আছে
 # =======================================================================
-API_ID = 22697010  # আপনার API ID এখানে বসান
-API_HASH = "fd88d7339b0371eb2a9501d523f3e2a7"  # আপনার API Hash এখানে বসান
-BOT_TOKEN = "8040002093:AAFvi-Ydt6QtPlVq4vjYfsLS8XRdb1tVEho"  # আপনার বট টোকেন এখানে বসান
-MONGO_URI = "mongodb+srv://mewayo8672:mewayo8672@cluster0.ozhvczp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"  # আপনার MongoDB কানেকশন স্ট্রিং এখানে বসান
+API_ID = 22697010
+API_HASH = "fd88d7339b0371eb2a9501d523f3e2a7"
+BOT_TOKEN = "8040002093:AAFvi-Ydt6QtPlVq4vjYfsLS8XRdb1tVEho"
+MONGO_URI = "mongodb+srv://mewayo8672:mewayo8672@cluster0.ozhvczp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 # আপনার ফাইল চ্যানেল এবং ওয়েবসাইটের তথ্য
-FILE_CHANNEL = -1002589759775  # আপনার চ্যানেল আইডি এখানে বসান (অবশ্যই integer হতে হবে)
-BASE_URL = "https://web-play.onrender.com"  # আপনার ওয়েবসাইটের URL এখানে বসান
-ADMIN_IDS = [8172129114] # আপনার অ্যাডমিন ইউজার আইডিগুলো এখানে লিস্ট আকারে বসান
+FILE_CHANNEL = -1002589759775
+BASE_URL = "https://web-play.onrender.com"
+ADMIN_IDS = [8172129114]
 # =======================================================================
 
 
@@ -220,4 +220,5 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
-        
+        # এই লাইনটি যোগ করা হয়েছে IndentationError ঠিক করার জন্য
+        print("Shutting down services...")
