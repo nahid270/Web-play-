@@ -7,6 +7,7 @@ from pyrogram import Client, filters, idle
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait, FileIdInvalid
 from pymongo import MongoClient
+from waitress import serve # <-- waitress ইম্পোর্ট করা হয়েছে
 
 # --- কনফিগারেশন (Configuration) ---
 API_ID = 22697010
@@ -24,29 +25,13 @@ movies_collection = db['movies']
 ads_collection = db['ads']
 web_app = Flask(__name__)
 
-# --- Pyrogram ক্লায়েন্টগুলো গ্লোবাল স্কোপে তৈরি করা হচ্ছে ---
-bot = Client(
-    "MovieBot",
-    bot_token=BOT_TOKEN,
-    api_id=API_ID,
-    api_hash=API_HASH
-)
+bot = Client("MovieBot", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HASH)
+web_client = Client("WebStreamer", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HASH, no_updates=True)
 
-web_client = Client(
-    "WebStreamer",
-    bot_token=BOT_TOKEN,
-    api_id=API_ID,
-    api_hash=API_HASH,
-    no_updates=True
-)
-
-# --- Pyrogram বট হ্যান্ডলার (Bot Handlers) ---
-# (এই অংশের কোনো পরিবর্তন নেই)
+# --- Pyrogram বট হ্যান্ডলার (এই অংশে কোনো পরিবর্তন নেই) ---
 @bot.on_message(filters.channel & (filters.video | filters.document) & filters.chat(FILE_CHANNEL))
 async def save_movie_handler(client: Client, message: Message):
-    if not message.caption:
-        print(f"Skipping message {message.id}: No caption found.")
-        return
+    if not message.caption: return
     media = message.video or message.document
     if not media: return
     title = message.caption.split("\n")[0].strip()
@@ -56,6 +41,7 @@ async def save_movie_handler(client: Client, message: Message):
         upsert=True)
     print(f"Saved/Updated movie: {title}")
 
+# ... (অন্যান্য বট হ্যান্ডলার এবং Flask রুটগুলো এখানে অপরিবর্তিত থাকবে) ...
 @bot.on_message(filters.private & filters.command("start"))
 async def start_handler(client: Client, message: Message):
     await message.reply("🎬 Welcome to Movie Bot!\nSend a movie name to search.")
@@ -70,8 +56,6 @@ async def search_movie_handler(client: Client, message: Message):
     buttons = [[InlineKeyboardButton(f"▶️ {result['title']}", url=f"{BASE_URL}/watch/{result['message_id']}")] for result in results]
     await message.reply("🎬 Here are your search results:", reply_markup=InlineKeyboardMarkup(buttons))
 
-# --- Flask ওয়েব সার্ভার রুট (Web Server Routes) ---
-# (এই অংশের কোনো পরিবর্তন নেই)
 @web_app.route("/")
 def home_route():
     return "<h3>✅ Pyrogram Bot and Flask Server are both running!</h3>"
@@ -120,27 +104,22 @@ def update_ad_route(admin_id):
 
 # --- প্রধান এক্সিকিউশন (Render.com-এর জন্য চূড়ান্ত সমাধান) ---
 
-async def start_pyrogram_clients():
-    """Pyrogram ক্লায়েন্টগুলোকে অ্যাসিঙ্ক্রোনাসভাবে চালু করে"""
+async def start_pyrogram():
     await bot.start()
     await web_client.start()
-
-def run_pyrogram_in_thread():
-    """একটি নতুন ইভেন্ট লুপ তৈরি করে এবং Pyrogram ক্লায়েন্ট ও idle() কে চালায়"""
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    
-    print("Starting Pyrogram clients in a background thread...")
-    loop.run_until_complete(start_pyrogram_clients())
     print("Pyrogram clients started successfully.")
+    await idle() # বটকে সচল রাখে
+
+def run_flask():
+    port = int(os.environ.get("PORT", 8080))
+    print(f"Starting Flask server on port {port}...")
+    serve(web_app, host='0.0.0.0', port=port)
+
+if __name__ == "__main__":
+    print("Starting services...")
+    # একটি আলাদা থ্রেডে Flask সার্ভার চালানো হচ্ছে
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.start()
     
-    idle() # এই থ্রেডটিকে সচল রাখে
-    print("Pyrogram clients stopped.")
-
-# একটি আলাদা ব্যাকগ্রাউন্ড থ্রেডে Pyrogram বট চালানো হচ্ছে
-pyrogram_thread = threading.Thread(target=run_pyrogram_in_thread, daemon=True)
-pyrogram_thread.start()
-
-# এই লাইনটি Render-এর Gunicorn সার্ভারকে বলবে যে 'web_app' হলো আমাদের Flask অ্যাপ
-# Gunicorn এটি ব্যবহার করে ওয়েব সার্ভার চালাবে
-app = web_app
+    # মূল থ্রেডে Pyrogram চালানো হচ্ছে
+    asyncio.run(start_pyrogram())
