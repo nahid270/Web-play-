@@ -1,5 +1,5 @@
 Flask
 Pyrogram
 TgCrypto
-pymongo
+pymongo[srv]
 waitress
