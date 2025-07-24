@@ -13,7 +13,7 @@ from waitress import serve # <-- waitress ইম্পোর্ট করা হ
 API_ID = 22697010
 API_HASH = "fd88d7339b0371eb2a9501d523f3e2a7"
 BOT_TOKEN = "8040002093:AAFvi-Ydt6QtPlVq4vjYfsLS8XRdb1tVEho"
-MONGO_URI = "mongodb+srv://mewayo8672:mewayo8672@cluster0.ozhvczp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI = "mongodb+srv://mesohas358:mesohas358@cluster0.6kxy1vc.mongodb.net/movie_db?retryWrites=true&w=majority&appName=Cluster0"
 FILE_CHANNEL = -1002589759775
 BASE_URL = "https://web-play.onrender.com"
 ADMIN_IDS = [8172129114]
