@@ -3,7 +3,7 @@ import asyncio
 import threading
 import re
 from flask import Flask, render_template_string, redirect, request, abort, Response
-from pyrogram import Client, filters
+from pyrogram import Client, filters, idle
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait, FileIdInvalid
 from pymongo import MongoClient
@@ -41,6 +41,7 @@ web_client = Client(
 )
 
 # --- Pyrogram বট হ্যান্ডলার (Bot Handlers) ---
+# (এই অংশের কোনো পরিবর্তন নেই)
 @bot.on_message(filters.channel & (filters.video | filters.document) & filters.chat(FILE_CHANNEL))
 async def save_movie_handler(client: Client, message: Message):
     if not message.caption:
@@ -70,9 +71,10 @@ async def search_movie_handler(client: Client, message: Message):
     await message.reply("🎬 Here are your search results:", reply_markup=InlineKeyboardMarkup(buttons))
 
 # --- Flask ওয়েব সার্ভার রুট (Web Server Routes) ---
+# (এই অংশের কোনো পরিবর্তন নেই)
 @web_app.route("/")
 def home_route():
-    return "<h3>✅ Pyrogram Bot is Running with Flask!</h3>"
+    return "<h3>✅ Pyrogram Bot and Flask Server are both running!</h3>"
 
 @web_app.route("/watch/<int:msg_id>")
 def watch_movie_route(msg_id):
@@ -117,11 +119,20 @@ def update_ad_route(admin_id):
     return redirect(f"/admin/{admin_id}")
 
 # --- প্রধান এক্সিকিউশন (Main Execution for Render) ---
-print("Starting Pyrogram clients...")
-bot.start()
-web_client.start()
-print("Pyrogram clients started!")
 
-# এই কোডটি Render-কে বলবে যে Flask অ্যাপের নাম web_app
-# এবং এটি নিজে থেকেই রান করবে
+def run_pyrogram():
+    """এই ফাংশনটি Pyrogram ক্লায়েন্টগুলোকে চালু করবে এবং idle() দিয়ে সচল রাখবে"""
+    print("Starting Pyrogram clients in a new thread...")
+    bot.start()
+    web_client.start()
+    print("Pyrogram clients started successfully.")
+    idle() # এই লাইনটি বটকে বন্ধ হতে দেবে না
+    print("Pyrogram clients stopped.")
+
+# একটি আলাদা থ্রেডে Pyrogram বট চালানো হচ্ছে
+# daemon=True দিলে মূল অ্যাপ বন্ধ হলে এই থ্রেডটিও বন্ধ হয়ে যাবে
+pyrogram_thread = threading.Thread(target=run_pyrogram, daemon=True)
+pyrogram_thread.start()
+
+# এই লাইনটি Render-এর Gunicorn সার্ভারকে বলবে যে 'web_app' হলো আমাদের Flask অ্যাপ
 app = web_app
