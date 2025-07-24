@@ -118,21 +118,29 @@ def update_ad_route(admin_id):
     ads_collection.update_one({"name": "main_ad"}, {"$set": {"code": code}}, upsert=True)
     return redirect(f"/admin/{admin_id}")
 
-# --- প্রধান এক্সিকিউশন (Main Execution for Render) ---
+# --- প্রধান এক্সিকিউশন (Render.com-এর জন্য চূড়ান্ত সমাধান) ---
 
-def run_pyrogram():
-    """এই ফাংশনটি Pyrogram ক্লায়েন্টগুলোকে চালু করবে এবং idle() দিয়ে সচল রাখবে"""
-    print("Starting Pyrogram clients in a new thread...")
-    bot.start()
-    web_client.start()
+async def start_pyrogram_clients():
+    """Pyrogram ক্লায়েন্টগুলোকে অ্যাসিঙ্ক্রোনাসভাবে চালু করে"""
+    await bot.start()
+    await web_client.start()
+
+def run_pyrogram_in_thread():
+    """একটি নতুন ইভেন্ট লুপ তৈরি করে এবং Pyrogram ক্লায়েন্ট ও idle() কে চালায়"""
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    
+    print("Starting Pyrogram clients in a background thread...")
+    loop.run_until_complete(start_pyrogram_clients())
     print("Pyrogram clients started successfully.")
-    idle() # এই লাইনটি বটকে বন্ধ হতে দেবে না
+    
+    idle() # এই থ্রেডটিকে সচল রাখে
     print("Pyrogram clients stopped.")
 
-# একটি আলাদা থ্রেডে Pyrogram বট চালানো হচ্ছে
-# daemon=True দিলে মূল অ্যাপ বন্ধ হলে এই থ্রেডটিও বন্ধ হয়ে যাবে
-pyrogram_thread = threading.Thread(target=run_pyrogram, daemon=True)
+# একটি আলাদা ব্যাকগ্রাউন্ড থ্রেডে Pyrogram বট চালানো হচ্ছে
+pyrogram_thread = threading.Thread(target=run_pyrogram_in_thread, daemon=True)
 pyrogram_thread.start()
 
 # এই লাইনটি Render-এর Gunicorn সার্ভারকে বলবে যে 'web_app' হলো আমাদের Flask অ্যাপ
+# Gunicorn এটি ব্যবহার করে ওয়েব সার্ভার চালাবে
 app = web_app
